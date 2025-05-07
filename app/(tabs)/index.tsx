@@ -1,75 +1,244 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  StyleSheet, 
+  StatusBar, 
+  SafeAreaView,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Image
+} from 'react-native';
+import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function LoginScreen() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-export default function HomeScreen() {
+  const handleLogin = () => {
+    if (!email.trim() || !password.trim()) {
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    // Simulate login process
+    setTimeout(() => {
+      setIsLoading(false);
+      router.push('/homes');
+    }, 1000);
+  };
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <TouchableWithoutFeedback onPress={dismissKeyboard}>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" />
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardAvoidingView}
+        >
+          <View style={styles.contentContainer}>
+            {/* Logo/Brand */}
+            <View style={styles.logoContainer}>
+              <View style={styles.logoCircle}>
+                <Ionicons name="home" size={40} color="#0066cc" />
+              </View>
+              <Text style={styles.appName}>KeyHouse</Text>
+              <Text style={styles.tagline}>Smart access to real estate</Text>
+            </View>
+
+            {/* Login Form */}
+            <View style={styles.formContainer}>
+              <Text style={styles.formTitle}>Sign In</Text>
+              
+              {/* Email Input */}
+              <View style={styles.inputContainer}>
+                <Ionicons name="mail-outline" size={20} color="#999" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  placeholderTextColor="#999"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
+              
+              {/* Password Input */}
+              <View style={styles.inputContainer}>
+                <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password"
+                  placeholderTextColor="#999"
+                  secureTextEntry={!showPassword}
+                  value={password}
+                  onChangeText={setPassword}
+                />
+                <TouchableOpacity 
+                  style={styles.eyeIcon}
+                  onPress={() => setShowPassword(!showPassword)}
+                >
+                  <Ionicons 
+                    name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                    size={20} 
+                    color="#999" 
+                  />
+                </TouchableOpacity>
+              </View>
+              
+              {/* Forgot Password */}
+              <TouchableOpacity style={styles.forgotPasswordContainer}>
+                <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+              </TouchableOpacity>
+              
+              {/* Login Button */}
+              <TouchableOpacity 
+                style={[
+                  styles.loginButton,
+                  (!email.trim() || !password.trim()) && styles.loginButtonDisabled,
+                  isLoading && styles.loginButtonLoading
+                ]}
+                onPress={handleLogin}
+                disabled={!email.trim() || !password.trim() || isLoading}
+              >
+                <Text style={styles.loginButtonText}>
+                  {isLoading ? 'Signing in...' : 'Sign In'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            
+            {/* Create Account */}
+            <View style={styles.createAccountContainer}>
+              <Text style={styles.createAccountText}>Don't have an account?</Text>
+              <TouchableOpacity>
+                <Text style={styles.createAccountLink}>Create one</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
-  stepContainer: {
-    gap: 8,
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 48,
+  },
+  logoCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#f0f8ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  appName: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#333',
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  tagline: {
+    fontSize: 16,
+    color: '#666',
+  },
+  formContainer: {
+    width: '100%',
+  },
+  formTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 24,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 8,
+    height: 56,
+    marginBottom: 16,
+  },
+  inputIcon: {
+    paddingHorizontal: 16,
+  },
+  input: {
+    flex: 1,
+    height: '100%',
+    fontSize: 16,
+    color: '#333',
+  },
+  eyeIcon: {
+    padding: 16,
+  },
+  forgotPasswordContainer: {
+    alignSelf: 'flex-end',
+    marginBottom: 24,
+  },
+  forgotPasswordText: {
+    fontSize: 14,
+    color: '#0066cc',
+  },
+  loginButton: {
+    backgroundColor: '#0066cc',
+    borderRadius: 8,
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loginButtonDisabled: {
+    backgroundColor: '#cccccc',
+  },
+  loginButtonLoading: {
+    backgroundColor: '#004c99',
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  createAccountContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 32,
+  },
+  createAccountText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  createAccountLink: {
+    fontSize: 16,
+    color: '#0066cc',
+    fontWeight: '600',
+    marginLeft: 4,
   },
 });
