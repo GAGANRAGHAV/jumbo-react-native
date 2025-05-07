@@ -3,7 +3,7 @@
 
 ## Video 
 
-Link: [https://screenrec.com/share/AdjSxs2wlv]
+Link: https://screenrec.com/share/AdjSxs2wlv
 
 ## Get started
 
